@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html lang='en'>
+
+<head>
+<meta charset='UTF-8'>
+<title>Kanban Filter</title>
+
+<!--Defining the stylistic features for columns and rows -->
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: b
+}
+
+.floated {
+   float:left;
+   margin-right:5px;
+}
+  
+</style>
+</head>
+
+<!--Starting the body I set a background color-->
+<body style="background-color:#F3D6EF;">
+
+<h1>Kanban Board</h1>
+
+<!--Creating a form that is used to add items.-->
+<div style = 'font-size: 20pt'>
+	Add Item: 
+	<form action="{{ url_for('add') }}" method='POST'>
+		<input type='text' name='todoitem'>
+		<input type='submit' value='Add Item'>
+	</form>
+</div>
+
+<!--Creating the row structure-->
+<div class="row">
+	
+	<!--Creating the first column used for the incomplete tasks-->
+	<div class="column" style='background-color: #F7AEED;'>
+		<h2> Incomplete Items </h2>
+		<!--Creating an unordered list for the items-->
+		<ul>
+			<!--Looping for incomplete tasks-->
+			{% for todo in incomplete %}
+			<!--Creating list item with the proper name-->
+			<li style = 'font-size: 20pt'>{{ todo.text }}</li>
+			
+			<!--Adding the Start task button that calls the move_right route-->
+			<form action="{{ url_for('move_right', id=todo.id) }}" method='POST'>
+				<input type='submit' class='floated' value='Start Task'>
+			</form>
+			
+			<!--Adding the Remove Item button that calls the delete route-->
+			<form action="{{ url_for('delete', id=todo.id) }}" method='POST'>
+				<input type='submit' class='floated' value='Remove Item'>
+			</form>
+			{% endfor %}
+		</ul>
+	</div>
+
+	<!--Creating the second column used for the tasks that are in progress-->
+	<div class="column" style='background-color: #81EBF6;'>
+		<h2> In Progress </h2>
+		<!--Creating an unordered list for the items-->
+		<ul>
+			<!--Looping for incomplete tasks-->
+			{% for todo in in_progress %}
+			<!--Creating list item with the proper name-->
+			<li style = 'font-size: 20pt'>{{ todo.text }}</li>
+			
+			<!--Adding the Mark as Complete task button that calls the move_right route-->
+			<form action="{{ url_for('move_right', id=todo.id) }}" method='POST'>
+				<input type='submit' class='floated' value='Mark as Complete'>
+			</form>
+			
+			<!--Adding the Move Back task button that calls the move_back route-->
+			<form action="{{ url_for('move_back', id=todo.id) }}" method='POST'>
+				<input type='submit' class='floated' value='Move Back'>
+			</form>
+
+			<!--Adding the Remove Item button that calls the delete route-->
+			<form action="{{ url_for('delete', id=todo.id) }}" method='POST'>
+				<input type='submit' class='floated' value='Remove Item'>
+			</form>
+			
+			{% endfor %}
+		</ul>
+	</div>
+
+	<!--Creating the last column used for the complete tasks-->
+	<div class="column" style='background-color: #CF84F7;'>
+		<h2> Complete Items </h2>
+		<ul>
+			<!--Looping for incomplete tasks-->
+			{% for todo in complete %}
+			<!--Creating list item with the proper name-->
+			<li style = 'font-size: 20pt'>{{ todo.text }}</li>
+			
+			<!--Adding the Move Back task button that calls the move_back route-->
+			<form action="{{ url_for('move_back', id=todo.id) }}" method='POST'>
+				<input type='submit' class='floated' value='Move Back'>
+			</form>
+
+			
+			<!--Adding the Remove Item button that calls the delete route-->
+			<form action="{{ url_for('delete', id=todo.id) }}" method='POST'>
+				<input type='submit' class='floated' value='Remove Item'>
+			</form>
+			
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+</body>
+
+</html>
