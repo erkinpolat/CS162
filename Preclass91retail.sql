@@ -15,15 +15,15 @@ CREATE TABLE Orders (
     CustomerID INTEGER,
     DateOrdered DATETIME,
     MonthOrdered INTEGER,
-    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID)
+    FOREIGN KEY (CustomerID) CONSTRAINT fk_customer_customer_id REFERENCES Customer(CustomerID)
 );
 
 CREATE TABLE OrderItems (
     OrderID INTEGER,
     ProductID INTEGER,
     Quantity INTEGER,
-    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+    FOREIGN KEY (OrderID) CONSTRAINT fk_orders_order_id REFERENCES Orders(OrderID),
+    FOREIGN KEY (ProductID) CONSTRAINT fk_products_product_id REFERENCES Product(ProductID)
 );
 
 CREATE TABLE Warehouse (
@@ -38,8 +38,8 @@ CREATE TABLE Inventory (
     WarehouseID INTEGER,
     ProductID INTEGER,
     Quantity INTEGER,
-    FOREIGN KEY (WarehouseID) REFERENCES Warehouse(WarehouseID),
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+    FOREIGN KEY (WarehouseID) CONSTRAINT fk_warehouse_wearehouse_id REFERENCES Warehouse(WarehouseID),
+    FOREIGN KEY (ProductID) CONSTRAINT fk_product_product_id REFERENCES Product(ProductID)
 );
 
 CREATE TABLE Supplier (
@@ -56,8 +56,8 @@ CREATE TABLE SupplierProduct(
     ProductID INTEGER,
     DaysLeadTime INTEGER,
     Cost NUMERIC(11, 2),
-    FOREIGN KEY (SupplierID) REFERENCES Supplier(SupplierID),
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+    FOREIGN KEY (SupplierID) CONSTRAINT fk_supplier_supplier_id REFERENCES Supplier(SupplierID),
+    FOREIGN KEY (ProductID) CONSTRAINT fk_product_product_id REFERENCES Product(ProductID)
 );
 
 CREATE TABLE SupplierOrders(
@@ -69,9 +69,9 @@ CREATE TABLE SupplierOrders(
     Status TEXT,
     DateOrdered DATE,
     DateDue DATE,
-    FOREIGN KEY (SupplierID) REFERENCES Supplier(SupplierID),
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID),
-    FOREIGN KEY (WarehouseID) REFERENCES Warehouse(WarehouseID)
+    FOREIGN KEY (SupplierID) CONSTRAINT fk_supplier_supplier_id REFERENCES Supplier(SupplierID),
+    FOREIGN KEY (ProductID) CONSTRAINT fk_product_product_id REFERENCES Product(ProductID),
+    FOREIGN KEY (WarehouseID) CONSTRAINT fk_warehouse_wearehouse_id REFERENCES Warehouse(WarehouseID)
 );
 CREATE TABLE Customer (
     CustomerID INTEGER PRIMARY KEY,
@@ -112,3 +112,11 @@ INSERT INTO SupplierOrders VALUES (6002, 5001, 3001, 4002, 99, "DELIVERED", "202
 
 INSERT INTO Customer VALUES (2000, "Gertrud", "Karr", "1709 Woodridge Lane", "Memphis", "TN 38110", "559-309-6624", "gkarr@dayrep.com");
 INSERT INTO Customer VALUES (2001, "Clara", "Tang", "500 Retreat Avenue", "York", "ME 03909", "312-367-6954", "clara_tang@armyspy.com");
+
+BEGIN TRANSACTION;
+INSERT INTO Orders VALUES (1002, 2000, "2025-01-01 10:00:00", 202501);
+INSERT INTO OrderItems VALUES (1002, 3002, 500);
+UPDATE Inventory SET Quantity = Quantity - 500 FROM sales.commissions c JOIN sales.targets t
+        ON c.target_id = t.target_id; WHERE WarehouseID=4001 AND ProductID=3001;
+SELECT Quantity FROM Inventory WHERE WarehouseID=4001 AND ProductID=3001;
+END TRANSACTION;
